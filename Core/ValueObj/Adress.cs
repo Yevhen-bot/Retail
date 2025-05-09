@@ -18,6 +18,7 @@ namespace Core.ValueObj
         public string City { get; init; }
         public string Country { get; init; }
 
+        public Adress() { }
         public Adress(string houseNumber, string street, string city, string country)
         {
             HouseNumber = houseNumber;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Interfaces;
 using Core.ValueObj;
 
 namespace Core.Models.People
@@ -16,6 +17,11 @@ namespace Core.Models.People
         // List of preferences
 
         public void Sleep()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Work()
         {
             throw new NotImplementedException();
         }

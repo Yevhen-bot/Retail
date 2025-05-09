@@ -6,15 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.ValueObj;
 
-namespace Core.Models.People
+namespace Core.Interfaces
 {
     public interface IPerson
     {
-        public Name Name { get; set; }
-        [Range(0, 120)]
-        public int Age { get; set; }
-        public Adress HomeAdress { get; set; }
-
+        public void Work();
         public void Sleep();
     }
 }
