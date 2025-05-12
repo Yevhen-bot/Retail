@@ -12,7 +12,7 @@ namespace Core.Models.People
     {
         private const double PROGRESSION = 0.7;
 
-        Store_Worker(Name name, Age birthdate, Email email, Adress adress, Salary salary, Store building) 
+        public Store_Worker(Name name, Age birthdate, Email email, Adress adress, Salary salary, Store building) 
             : base(name, birthdate, email, adress, salary, new ExhaustionLevel(PROGRESSION), building)
         {
             building.AddWorker(this);

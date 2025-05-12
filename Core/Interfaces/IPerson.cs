@@ -10,6 +10,7 @@ namespace Core.Interfaces
 {
     public interface IPerson
     {
+        public int Years { get; }
         public void Work();
         public void Sleep();
     }

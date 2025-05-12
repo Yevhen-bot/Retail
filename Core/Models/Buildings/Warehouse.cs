@@ -16,12 +16,14 @@ namespace Core.Models.Buildings
         private readonly List<Warehouse_Worker> _workers;
         private Manager? _manager;
         private readonly Adress _adress;
+        private readonly Dictionary<Product, int> _products;
 
         public double Area { get; private set; }
         public string Name { get; private set; } = null!;
         public Adress Adress => _adress;
         public IReadOnlyList<Worker> Workers => _workers;
         public Manager Manager => _manager;
+        public IReadOnlyDictionary<Product, int> Products => _products;
 
         public Warehouse(double area, string name, Adress adress)
         {
@@ -29,6 +31,7 @@ namespace Core.Models.Buildings
             Area = area;
             Name = name;
             _adress = adress;
+            _products = [];
         }
 
         public void AddManager(Manager manager)
@@ -50,9 +53,102 @@ namespace Core.Models.Buildings
             _workers.Add((Warehouse_Worker)worker);
         }
 
+        public void AddProduct(Product product, int quantity)
+        {
+            try
+            {
+                var v = new Dictionary<Product, int>();
+                v.Add(product, quantity);
+                ValidateSpace(v);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                throw new ArgumentOutOfRangeException("Something wrong.", ex);
+            }
+
+            if (_products.ContainsKey(product))
+                _products[product] += quantity;
+            else
+                _products[product] = quantity;
+        }
+
+        public void AddProduct(Dictionary<Product, int> newpr)
+        {
+            ValidateSpace(newpr);
+            foreach (var el in newpr)
+            {
+                if (_products.ContainsKey(el.Key))
+                    _products[el.Key] += el.Value;
+                else
+                    _products[el.Key] = el.Value;
+            }
+        }
+
         public void SimulateDay()
         {
             throw new NotImplementedException();
+        }
+
+        public void Export(Dictionary<Product, int> products, Store to)
+        {
+
+            foreach (var el in products)
+            {
+                if (_products.ContainsKey(el.Key))
+                {
+                    if (_products[el.Key] < el.Value)
+                        throw new ArgumentOutOfRangeException("Not enough product in warehouse.");
+                }
+                else
+                    throw new ArgumentOutOfRangeException("Product not found in warehouse.");
+            }
+
+            try
+            {
+                to.Import(products);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                throw new ArgumentOutOfRangeException("Not enough space in the store.", ex);
+            }
+
+            foreach (var el in products)
+            {
+                _products[el.Key] -= el.Value;
+            }
+        }
+
+        public void Export(Dictionary<Product, int> products)
+        {
+            foreach (var el in products)
+            {
+                if (_products.ContainsKey(el.Key))
+                {
+                    if (_products[el.Key] < el.Value)
+                        throw new ArgumentOutOfRangeException("Not enough product in warehouse.");
+                }
+                else
+                    throw new ArgumentOutOfRangeException("Product not found in warehouse.");
+            }
+
+            foreach (var el in products)
+            {
+                _products[el.Key] -= el.Value;
+            }
+        }
+
+        private void ValidateSpace(Dictionary<Product, int> newpr)
+        {
+            double totalspace = 0;
+            foreach (var el in newpr)
+            {
+                if (el.Value < 0)
+                    throw new ArgumentOutOfRangeException(($"{el.Key},{el.Value}"), "Quantity cannot be negative.");
+                totalspace += el.Key.MPU * el.Value;
+
+                if (totalspace > Area * UAR)
+                    throw new ArgumentOutOfRangeException("Total space exceeds warehouse area.");
+            }
         }
     }
 }

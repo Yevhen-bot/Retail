@@ -43,6 +43,12 @@ namespace Core.ValueObj
                 throw new Exception("Invalid Adress");
             }
         }
+
+        public double Distance(Adress other)
+        {
+            // immitate distance calculation
+            return new Random().NextDouble() * 100;
+        }
     }
 
 

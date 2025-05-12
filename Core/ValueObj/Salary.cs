@@ -39,5 +39,19 @@ namespace Core.ValueObj
             }
             this = this with { Amount = Amount + am };
         }
+
+        public void DeRaise(decimal am)
+        {
+            if (am >= 0)
+            {
+                throw new ArgumentException("Invalid Salary deraise");
+            }
+            this = this with { Amount = Amount - am };
+        }
+
+        public decimal GetPayForDay()
+        {
+            return Amount / 7;
+        }
     }
 }

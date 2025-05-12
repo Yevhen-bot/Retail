@@ -16,6 +16,7 @@ namespace Core.Interfaces
         Adress Adress { get; }
         public IReadOnlyList<Worker> Workers { get; }
         public Manager Manager { get; }
+        public IReadOnlyDictionary<Product, int> Products { get; }
 
         public void SimulateDay();
         public void AddManager(Manager manager);
