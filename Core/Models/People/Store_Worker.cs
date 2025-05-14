@@ -18,14 +18,5 @@ namespace Core.Models.People
             building.AddWorker(this);
         }
 
-        public override void Sleep()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Work()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

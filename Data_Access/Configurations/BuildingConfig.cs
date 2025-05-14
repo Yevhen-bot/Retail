@@ -48,6 +48,32 @@ namespace Data_Access.Configurations
                         .IsRequired()
                         .HasMaxLength(20);
                 });
+
+            builder
+                .OwnsMany(c => c.Products, Pbuilder =>
+                {
+                    Pbuilder
+                        .ToTable("Building_Products");
+
+                    Pbuilder
+                        .Property(p => p.Name)
+                        .HasColumnName("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(50);
+                    Pbuilder
+                        .Property(p => p.Price)
+                        .HasColumnName("ProductPrice")
+                        .IsRequired()
+                        .HasPrecision(18, 2);
+                    Pbuilder
+                        .Property(p => p.MPU)
+                        .HasColumnName("MetersPerUnit")
+                        .IsRequired()
+                        .HasPrecision(18, 2);
+                    Pbuilder
+                        .Property(p => p.Quantity)
+                        .HasColumnName("Quantity");
+                });
         }
     }
 }

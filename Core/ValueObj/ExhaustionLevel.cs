@@ -12,6 +12,8 @@ namespace Core.ValueObj
         private const int MAXLEVEL = 100;
         private const double MINPROGRESSION = 0;
         private const double MAXPROGRESSION = 7.5;
+        private const double HIGHRISK = 70;
+        private const int CHANGEDAY = 10;
 
         public double Level { get; init; }
         public double Progression { get; init; }
@@ -56,9 +58,14 @@ namespace Core.ValueObj
 
         private void ValidateLv()
         {
+            if(Level > HIGHRISK)
+            {
+                throw new Exception("High risk of exhaustion");
+            }
+
             if (Level < MINLEVEL || Level > MAXLEVEL)
             {
-                throw new ArgumentException("Invalid Level");
+                throw new ArgumentOutOfRangeException("Invalid Level");
             }
         }
 
@@ -66,6 +73,39 @@ namespace Core.ValueObj
         {
             this = this with { Level = Level - am };
             ValidateLv();
+        }
+
+        public void Progress()
+        {
+            this = this with { Level = Level + Progression };
+            try
+            {
+                ValidateLv();
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                throw new ArgumentOutOfRangeException("Error creating ExhaustionLevel", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException("High risk", ex);
+            }
+        }
+
+        public void GoodDay()
+        {
+            this = this with
+            {
+                Level = Math.Max(0, Level - CHANGEDAY)
+            };
+        }
+
+        public void BadDay()
+        {
+            this = this with
+            {
+                Level = Math.Min(100, Level + CHANGEDAY)
+            };
         }
     }
 }

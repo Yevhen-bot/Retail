@@ -77,6 +77,14 @@ namespace Data_Access.Configurations
                         .IsRequired()
                         .HasPrecision(18, 2);
                 })
+                .ComplexProperty(w => w.Email, emailbuilder =>
+                {
+                    emailbuilder
+                        .Property(e => e.EmailAddress)
+                        .HasColumnName("Email")
+                        .IsRequired()
+                        .HasMaxLength(50);
+                })
                 .ComplexProperty(w => w.Role, rolebuilder =>
                 {
                     rolebuilder

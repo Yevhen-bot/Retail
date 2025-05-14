@@ -18,14 +18,22 @@ namespace Core.Models.People
             building.AddManager(this);
         }
 
-        public override void Sleep()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Work()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _lvl.Progress();
+            }
+            catch (ArgumentException ex)
+            {
+                RaiseSalary();
+            }
+        }
+
+        public void Manage(object sender, ExhaustionLevel lvl)
+        {
+            var v = (Worker)sender;
+            v.RaiseSalary();
         }
     }
 }

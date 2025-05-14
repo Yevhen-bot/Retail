@@ -28,6 +28,9 @@ namespace Data_Access
 
         public DbSet<Worker> Workers { get; set; }
         public DbSet<Building> Buildings { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Owner> Owners { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);

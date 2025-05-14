@@ -5,6 +5,7 @@ using Data_Access;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,9 +13,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Access.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250514191423_BigChanges")]
+    partial class BigChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,9 +55,6 @@ namespace Data_Access.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("int");
 
                     b.ComplexProperty<Dictionary<string, object>>("Adress", "Data_Access.Entities.Building.Adress#Adress", b1 =>
                         {
@@ -94,8 +94,6 @@ namespace Data_Access.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerId");
-
                     b.ToTable("Buildings");
                 });
 
@@ -106,10 +104,6 @@ namespace Data_Access.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("HashedPassword")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<decimal>("Money")
                         .HasColumnType("decimal(65,30)");
@@ -179,47 +173,6 @@ namespace Data_Access.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Data_Access.Entities.Owner", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("HashedPassword")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.ComplexProperty<Dictionary<string, object>>("Email", "Data_Access.Entities.Owner.Email#Email", b1 =>
-                        {
-                            b1.Property<string>("EmailAddress")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("varchar(50)")
-                                .HasColumnName("Email");
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("Name", "Data_Access.Entities.Owner.Name#Name", b1 =>
-                        {
-                            b1.Property<string>("FirstName")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("varchar(50)")
-                                .HasColumnName("FirstName");
-
-                            b1.Property<string>("LastName")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("varchar(50)")
-                                .HasColumnName("LastName");
-                        });
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Owners");
-                });
-
             modelBuilder.Entity("Data_Access.Entities.Worker", b =>
                 {
                     b.Property<int>("Id")
@@ -230,10 +183,6 @@ namespace Data_Access.Migrations
 
                     b.Property<int>("BuildingId")
                         .HasColumnType("int");
-
-                    b.Property<string>("HashedPassword")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.ComplexProperty<Dictionary<string, object>>("Age", "Data_Access.Entities.Worker.Age#Age", b1 =>
                         {
@@ -343,61 +292,9 @@ namespace Data_Access.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Data_Access.Entities.Building", b =>
-                {
-                    b.HasOne("Data_Access.Entities.Owner", "Owner")
-                        .WithMany("Buildings")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("Data_Access.Wrappers.ProductWrapper", "Products", b1 =>
-                        {
-                            b1.Property<int>("BuildingId")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<double>("MPU")
-                                .HasPrecision(18, 2)
-                                .HasColumnType("double")
-                                .HasColumnName("MetersPerUnit");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("varchar(50)")
-                                .HasColumnName("ProductName");
-
-                            b1.Property<double>("Price")
-                                .HasPrecision(18, 2)
-                                .HasColumnType("double")
-                                .HasColumnName("ProductPrice");
-
-                            b1.Property<int>("Quantity")
-                                .HasColumnType("int")
-                                .HasColumnName("Quantity");
-
-                            b1.HasKey("BuildingId", "Id");
-
-                            b1.ToTable("Building_Products", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("BuildingId");
-                        });
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Products");
-                });
-
             modelBuilder.Entity("Data_Access.Entities.Client", b =>
                 {
-                    b.OwnsMany("Data_Access.Wrappers.ProductWrapper", "Preferences", b1 =>
+                    b.OwnsMany("Data_Access.Entities.ProductWrapper", "Preferences", b1 =>
                         {
                             b1.Property<int>("ClientId")
                                 .HasColumnType("int");
@@ -447,7 +344,7 @@ namespace Data_Access.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsMany("Data_Access.Wrappers.ProductWrapper", "Products", b1 =>
+                    b.OwnsMany("Data_Access.Entities.ProductWrapper", "Products", b1 =>
                         {
                             b1.Property<int>("OrderId")
                                 .HasColumnType("int");
@@ -480,7 +377,7 @@ namespace Data_Access.Migrations
 
                             b1.HasKey("OrderId", "Id");
 
-                            b1.ToTable("Order_Products", (string)null);
+                            b1.ToTable("Products", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -510,11 +407,6 @@ namespace Data_Access.Migrations
             modelBuilder.Entity("Data_Access.Entities.Client", b =>
                 {
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("Data_Access.Entities.Owner", b =>
-                {
-                    b.Navigation("Buildings");
                 });
 #pragma warning restore 612, 618
         }

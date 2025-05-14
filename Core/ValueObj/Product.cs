@@ -35,5 +35,14 @@ namespace Core.ValueObj
                 throw new ArgumentException("Invalid Product UPM");
             }
         }
+
+        public void ChangePrice(double price)
+        {
+            if (price <= 0)
+            {
+                throw new ArgumentException("Invalid Product price");
+            }
+            this = this with { Price = price };
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace Core.Models.Buildings
 {
     public class Store : IBuilding
     {
+        private const double PREFERENCE = 0.9;
         private const double UAR = 0.6;
 
         private Manager? _manager;
@@ -44,6 +45,10 @@ namespace Core.Models.Buildings
                 throw new InvalidOperationException("Manager already assigned to this building.");
 
             _manager = manager;
+            foreach (var worker in _workers)
+            {
+                worker.HighExLevel += _manager.Manage;
+            }
         }
 
         public void AddWorker(Worker worker)
@@ -54,6 +59,11 @@ namespace Core.Models.Buildings
             ArgumentNullException.ThrowIfNull(worker);
 
             _workers.Add((Store_Worker)worker);
+
+            if (_manager != null)
+            {
+                worker.HighExLevel += _manager.Manage;
+            }
         }
 
         public void AddClient(Client client)
@@ -64,7 +74,28 @@ namespace Core.Models.Buildings
 
         public void SimulateDay()
         {
-            throw new NotImplementedException();
+            if (_manager == null) throw new InvalidOperationException("Manager is not assigned to this building.");
+            if (_workers.Count == 0) throw new InvalidOperationException("No workers in this building.");
+
+            foreach (var el in _workers)
+            {
+                el.Work();
+            }
+            _manager.Work();
+            foreach (var el in _clients)
+            {
+                el.Work();
+            }
+
+            foreach (var el in _clients)
+            {
+                el.Sleep();
+            }
+            _manager.Sleep();
+            foreach (var el in _workers)
+            {
+                el.Sleep();
+            }
         }
 
         public void Import(Dictionary<Product, int> products)
@@ -115,5 +146,43 @@ namespace Core.Models.Buildings
                     throw new ArgumentOutOfRangeException("Total space exceeds warehouse area.");
             }
         }
+
+        public double TrySell(Client client, Dictionary<Product, int> products, HashSet<Product> pref)
+        {
+            if(!_clients.Contains(client))
+            {
+                _clients.Add(client);
+            }
+
+            double price = 0;
+            foreach (var el in products)
+            {
+                if (_products.ContainsKey(el.Key))
+                {
+                    if (_products[el.Key] < el.Value)
+                        throw new ArgumentOutOfRangeException(nameof(el.Key), el.Value, "We don`t have enough");
+
+                    if(pref.Contains(el.Key))
+                    {
+                        price += el.Key.Price * el.Value * PREFERENCE;
+                    }
+                    else price += el.Key.Price * el.Value;
+                }
+                else
+                    throw new ArgumentOutOfRangeException(nameof(el.Key), el.Key, "We don`t have this item");
+            }
+
+            return price;
+        }
+
+        public void Sell(Dictionary<Product, int> products)
+        {
+            foreach (var el in products)
+            {
+                _products[el.Key] -= el.Value;
+            }
+        }
+
+        public static double GetPreferenceConst() => PREFERENCE;
     }
 }

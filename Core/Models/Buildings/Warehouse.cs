@@ -41,6 +41,10 @@ namespace Core.Models.Buildings
                 throw new InvalidOperationException("Manager already assigned to this building.");
 
             _manager = manager;
+            foreach (var worker in _workers)
+            {
+                worker.HighExLevel += _manager.Manage;
+            }
         }
 
         public void AddWorker(Worker worker)
@@ -51,6 +55,11 @@ namespace Core.Models.Buildings
             ArgumentNullException.ThrowIfNull(worker);
 
             _workers.Add((Warehouse_Worker)worker);
+
+            if (_manager != null)
+            {
+                worker.HighExLevel += _manager.Manage;
+            }
         }
 
         public void AddProduct(Product product, int quantity)
@@ -86,7 +95,19 @@ namespace Core.Models.Buildings
 
         public void SimulateDay()
         {
-            throw new NotImplementedException();
+            if(_manager == null) throw new InvalidOperationException("Manager is not assigned to this building.");
+            if (_workers.Count == 0) throw new InvalidOperationException("No workers in this building.");
+
+            foreach (var worker in _workers)
+            {
+                worker.Work();
+            }
+            _manager.Work();
+            _manager.Sleep();
+            foreach(var worker in _workers)
+            {
+                worker.Sleep();
+            }
         }
 
         public void Export(Dictionary<Product, int> products, Store to)
