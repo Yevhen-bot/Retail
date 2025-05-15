@@ -19,10 +19,9 @@ namespace Core.Models.People
         protected Adress _adress;
         protected Salary _salary;
         protected ExhaustionLevel _lvl;
-        protected IBuilding _building;
         protected Random _rnd;
 
-        public Worker(Name name, Age birthdate, Email email, Adress adress, Salary salary, ExhaustionLevel lvl, IBuilding building)
+        public Worker(Name name, Age birthdate, Email email, Adress adress, Salary salary, ExhaustionLevel lvl)
         {
             _name = name;
             _birthDate = birthdate;
@@ -30,9 +29,15 @@ namespace Core.Models.People
             _adress = adress;
             _salary = salary;
             _lvl = lvl;
-            _building = building;
             _rnd = new();
         }
+
+        public Name Name => _name;
+        public Age BirthDate => _birthDate;
+        public Email Email => _email;
+        public Adress Adress => _adress;
+        public Salary Salary => _salary;
+        public ExhaustionLevel ExhaustionLevel => _lvl;
 
         public int Years => _birthDate.GetAge();
         public event EventHandler<ExhaustionLevel> HighExLevel;

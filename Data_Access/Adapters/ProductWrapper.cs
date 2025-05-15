@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.ValueObj;
 
-namespace Data_Access.Wrappers
+namespace Data_Access.Adapters
 {
     public class ProductWrapper
     {

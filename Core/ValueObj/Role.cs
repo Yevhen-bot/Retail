@@ -12,7 +12,8 @@ namespace Core.ValueObj
         private static readonly string Manager = "Manager";
         private static readonly string Store_Worker = "Store_Worker";
         private static readonly string Warehouse_Worker = "Warehouse_Worker";
-        private static readonly List<string> roles = [Manager, Store_Worker, Warehouse_Worker, Owner];
+        private static readonly string Client = "Client";
+        private static readonly List<string> roles = [Manager, Store_Worker, Warehouse_Worker, Owner, Client];
 
         public string RoleName { get; init; }
 

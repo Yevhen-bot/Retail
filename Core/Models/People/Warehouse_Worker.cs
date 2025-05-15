@@ -12,11 +12,14 @@ namespace Core.Models.People
     {
         private const double PROGRESSION = 1.2;
 
-        public Warehouse_Worker(Name name, Age birthdate, Email email, Adress adress, Salary salary, Warehouse building)
-            : base(name, birthdate, email, adress, salary, new ExhaustionLevel(PROGRESSION), building)
+        public Warehouse_Worker(Name name, Age birthdate, Email email, Adress adress, Salary salary)
+            : base(name, birthdate, email, adress, salary, new ExhaustionLevel(PROGRESSION))
         {
-            building.AddWorker(this);
         }
 
+        public Warehouse_Worker(Name name, Age birthdate, Email email, Adress adress, Salary salary, ExhaustionLevel lvl)
+            : base(name, birthdate, email, adress, salary, lvl)
+        {
+        }
     }
 }

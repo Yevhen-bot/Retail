@@ -7,7 +7,7 @@ namespace Infrastructure.Creational
     public interface IFactory
     {
         IBuilding GetBuilding(double area, string name, Adress adress);
-        Worker GetWorker(Name name, Age birthdate, Email email, Adress adress, Salary salary, IBuilding building);
-        Manager GetManager(Name name, Age birthdate, Email email, Adress adress, Salary salary, IBuilding building);
+        Worker GetWorker(Name name, Age birthdate, Email email, Adress adress, Salary salary);
+        Manager GetManager(Name name, Age birthdate, Email email, Adress adress, Salary salary);
     }
 }

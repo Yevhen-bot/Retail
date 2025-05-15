@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access.Repos
 {
-    public class OwnerRepository : IRepository<Owner>
+    public class OwnerRepository : IUserRepository<Owner>   
     {
         private readonly AppDbContext _context;
         public OwnerRepository(AppDbContext context)
@@ -40,7 +40,27 @@ namespace Data_Access.Repos
 
         public Owner GetById(int id)
         {
-            var owner = _context.Owners.AsNoTracking().FirstOrDefault(o => o.Id == id);
+            var owner = _context.Owners
+                .AsNoTracking()
+                .Include(o => o.Buildings)
+                .ThenInclude(b => b.Products)
+                .Include(o => o.Buildings)
+                .ThenInclude(b => b.Clients)
+                .Include(o => o.Buildings)
+                .ThenInclude(b => b.Workers)
+                .FirstOrDefault(o => o.Id == id);
+            if (owner == null)
+            {
+                throw new ArgumentNullException("Owner not found");
+            }
+
+            return owner;
+        }
+
+        public Owner GetByIdWithTrack(int id)
+        {
+            var owner = _context.Owners.Find(id);
+
             if (owner == null)
             {
                 throw new ArgumentNullException("Owner not found");

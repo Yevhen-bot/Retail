@@ -44,6 +44,7 @@ namespace Data_Access.Repos
                 .Include(b => b.Products)
                 .Include(b => b.Workers)
                 .Include(b => b.Clients)
+                .Include(b => b.Owner)
                 .ToList();
         }
 
@@ -53,6 +54,7 @@ namespace Data_Access.Repos
                 .Include(b => b.Products)
                 .Include(b => b.Workers)
                 .Include(b => b.Clients)
+                .Include(b => b.Owner)
                 .AsNoTracking()
                 .FirstOrDefault(b => b.Id == id);
 

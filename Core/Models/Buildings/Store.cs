@@ -25,6 +25,7 @@ namespace Core.Models.Buildings
         public string Name { get; private set; } = null!;
         public Adress Adress => _adress;
         public IReadOnlyList<Worker> Workers => _workers;
+        public List<Client> Clients => _clients;
         public Manager Manager => _manager;
         public IReadOnlyDictionary<Product, int> Products => _products;
 
@@ -36,6 +37,16 @@ namespace Core.Models.Buildings
             _adress = adress;
             _clients = [];
             _products = [];
+        }
+
+        public Store(string name, Adress adress, double area, Dictionary<Product, int> products, List<Client> clients)
+        {
+            Name = name;
+            _adress = adress;
+            Area = area;
+            _products = products;
+            _workers = new();
+            _clients = clients;
         }
 
         public void AddManager(Manager manager)

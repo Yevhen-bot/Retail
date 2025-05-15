@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Interfaces;
 using Core.Models.Buildings;
+using Core.Models.People;
 using Core.ValueObj;
 using Org.BouncyCastle.Asn1.X509;
 
 namespace Data_Access.Entities
 {
-    public class Worker
+    public class Worker : IUser
     {
         public int Id { get; set; }
         public Name Name { get; set; }

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access.Repos
 {
-    public class ClientRepository : IRepository<Client>
+    public class ClientRepository : IUserRepository<Client>
     {
         private readonly AppDbContext _context;
         public ClientRepository(AppDbContext context)
@@ -32,6 +32,18 @@ namespace Data_Access.Repos
                 _context.SaveChanges();
             }
             else throw new ArgumentNullException("Client not found");
+        }
+
+        public Client GetByIdWithTrack(int id)
+        {
+            var owner = _context.Clients.Find(id);
+
+            if (owner == null)
+            {
+                throw new ArgumentNullException("Client not found");
+            }
+
+            return owner;
         }
 
         public List<Client> GetAll()

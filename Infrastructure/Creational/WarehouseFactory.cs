@@ -17,18 +17,14 @@ namespace Infrastructure.Creational
             return new Warehouse(area, name, adress);
         }
 
-        public Manager GetManager(Name name, Age birthdate, Email email, Adress adress, Salary salary, IBuilding building)
+        public Manager GetManager(Name name, Age birthdate, Email email, Adress adress, Salary salary)
         {
-            return new Manager(name, birthdate, email, adress, salary, building);
+            return new Manager(name, birthdate, email, adress, salary);
         }
 
-        public Worker GetWorker(Name name, Age birthdate, Email email, Adress adress, Salary salary, IBuilding building)
+        public Worker GetWorker(Name name, Age birthdate, Email email, Adress adress, Salary salary)
         {
-            if (building is not Warehouse)
-            {
-                throw new ArgumentException("Building must be a Warehouse");
-            }
-            return new Warehouse_Worker(name, birthdate, email, adress, salary, (Warehouse)building);
+            return new Warehouse_Worker(name, birthdate, email, adress, salary);
         }
     }
 }

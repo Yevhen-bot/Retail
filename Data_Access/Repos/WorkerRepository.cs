@@ -11,10 +11,10 @@ using Worker = Data_Access.Entities.Worker;
 
 namespace Data_Access.Repos
 {
-    public class WorkerReposiroty : IRepository<Worker>
+    public class WorkerRepository : IUserRepository<Worker>
     {
         private readonly AppDbContext _context;
-        public WorkerReposiroty(AppDbContext context)
+        public WorkerRepository(AppDbContext context)
         {
             _context = context;
         }
@@ -34,6 +34,18 @@ namespace Data_Access.Repos
                 _context.SaveChanges();
             }
             else throw new ArgumentNullException("Worker not found");
+        }
+
+        public Worker GetByIdWithTrack(int id)
+        {
+            var owner = _context.Workers.Find(id);
+
+            if (owner == null)
+            {
+                throw new ArgumentNullException("Worker not found");
+            }
+
+            return owner;
         }
 
         public List<Worker> GetAll()

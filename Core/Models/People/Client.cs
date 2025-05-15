@@ -23,10 +23,18 @@ namespace Core.Models.People
         private decimal _money;
         private Random _rnd;
         private List<Order> _orders;
+        private string? _password;
 
         public int Years => _age.GetAge();
+        public Age Age => _age;
+        public Name Name => _name;
+        public Email Email => _email;
+        public Salary Salary => _salary;
+        public decimal Money => _money;
+        public string? Password => _password;
+        public List<Product> Preferenc => _preferences.ToList();
 
-        public Client(Name name, Age age, Salary salary, Dictionary<Product, int> products, decimal money, HashSet<Product> preferences = null)
+        public Client(Name name, Age age, Salary salary, Dictionary<Product, int> products, decimal money, HashSet<Product> preferences = null, string? password = null)
         {
             _name = name;
             _age = age;
@@ -38,6 +46,7 @@ namespace Core.Models.People
             _money = money;
             _rnd = new();
             _orders = new();
+            _password = password;
         }
 
         public void Sleep()

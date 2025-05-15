@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.ValueObj;
-using Data_Access.Wrappers;
+using Data_Access.Adapters;
 
 namespace Data_Access.Entities
 {

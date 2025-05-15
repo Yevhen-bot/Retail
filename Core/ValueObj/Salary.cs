@@ -42,11 +42,12 @@ namespace Core.ValueObj
 
         public void DeRaise(decimal am)
         {
-            if (am >= 0)
+            if (am <= 0)
             {
                 throw new ArgumentException("Invalid Salary deraise");
             }
             this = this with { Amount = Amount - am };
+            Validate();
         }
 
         public decimal GetPayForDay()

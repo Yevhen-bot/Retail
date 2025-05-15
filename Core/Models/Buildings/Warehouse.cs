@@ -34,6 +34,15 @@ namespace Core.Models.Buildings
             _products = [];
         }
 
+        public Warehouse(string name, Adress adress, double area, Dictionary<Product, int> products)
+        {
+            Name = name;
+            _adress = adress;
+            Area = area;
+            _products = products;
+            _workers = new();
+        }
+
         public void AddManager(Manager manager)
         {
             ArgumentNullException.ThrowIfNull(manager);
