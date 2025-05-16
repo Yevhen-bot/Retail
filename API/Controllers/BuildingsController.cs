@@ -72,5 +72,55 @@ namespace API.Controllers
 
             return NoContent();
         }
+
+        [Authorize(Policy = "Warehouse_Worker")]
+        [HttpPatch("add_products")]
+        public IActionResult BringGoods(BringGoodsModel m)
+        {
+            var l = _mapper.GetPairGoodQuant(m);
+            try
+            {
+                _service.AddGoods((Product)l[0], (int)l[1], (int)l[2]);
+            } catch(Exception e)
+            {
+                return BadRequest(e);
+            }
+
+            return Ok();
+        }
+
+        [Authorize(Policy = "Warehouse_Worker")]
+        [HttpPut("export")]
+        public IActionResult Export([FromBody] ExportImportModel m)
+        {
+            var l = _mapper.ExportImport(m);
+            try
+            {
+                _service.Export((Product)l[0], (int)l[1], (int)l[2], (int)l[3]);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+
+            return Ok();
+        }
+
+        [Authorize(Policy = "Store_Worker")]
+        [HttpPut("import")]
+        public IActionResult Import([FromBody] ExportImportModel m)
+        {
+            var l = _mapper.ExportImport(m);
+            try
+            {
+                _service.Import((Product)l[0], (int)l[1], (int)l[2], (int)l[3]);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+
+            return Ok();
+        }
     }
 }

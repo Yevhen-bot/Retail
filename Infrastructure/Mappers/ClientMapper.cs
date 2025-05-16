@@ -11,6 +11,13 @@ namespace Infrastructure.Mappers
 {
     public class ClientMapper
     {
+        private readonly OrderMapper _orderMapper;
+
+        public ClientMapper(OrderMapper orderMapper)
+        {
+            _orderMapper = orderMapper;
+        }
+
         public Core.Models.People.Client MapFromDb(Data_Access.Entities.Client dbc)
         {
             return new Core.Models.People.Client(
@@ -20,7 +27,8 @@ namespace Infrastructure.Mappers
                 [],
                 dbc.Money,
                 dbc.Preferences.Select(x => x.Product).ToHashSet(),
-                dbc.HashedPassword);
+                dbc.HashedPassword,
+                dbc.Orders.Select(x => _orderMapper.MapFromDb(x)).ToList());
         }
 
         public Data_Access.Entities.Client MapToDb(Core.Models.People.Client client)
@@ -33,7 +41,8 @@ namespace Infrastructure.Mappers
                 Email = client.Email,
                 Money = client.Money,
                 Preferences = client.Preferenc.Select(x => new ProductWrapper() { Product = x }).ToList(),
-                HashedPassword = client.Password
+                HashedPassword = client.Password,
+                Orders = client.Orders.Select(x => _orderMapper.MapToDb(x)).ToList()
             };
         }
     }

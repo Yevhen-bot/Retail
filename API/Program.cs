@@ -34,6 +34,7 @@ builder.Services.AddScoped<Mapper>();
 builder.Services.AddScoped<ClientMapper>();
 builder.Services.AddScoped<WorkerMapper>();
 builder.Services.AddScoped<BuildingMapper>();
+builder.Services.AddScoped<OrderMapper>();
 
 builder.Services.AddTransient<PasswordService<Owner>>();
 builder.Services.AddTransient<PasswordService<Client>>();
@@ -41,6 +42,8 @@ builder.Services.AddTransient<PasswordService<Worker>>();
 
 builder.Services.AddScoped<OwnerService>();
 builder.Services.AddScoped<BuildingService>();
+builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<WorkerService>();
 
 builder.Services.AddHttpContextAccessor();
 

@@ -31,7 +31,8 @@ namespace Infrastructure.Mappers
                         email,
                         adress,
                         salary,
-                        exhaustionLevel);
+                        exhaustionLevel,
+                        dbWorker.HashedPassword);
 
                 case nameof(Store_Worker):
                     return new Core.Models.People.Store_Worker(
@@ -40,7 +41,8 @@ namespace Infrastructure.Mappers
                             email,
                             adress,
                             salary,
-                            exhaustionLevel);
+                            exhaustionLevel,
+                            dbWorker.HashedPassword);
 
                 case nameof(Warehouse_Worker):
                     return new Core.Models.People.Warehouse_Worker(
@@ -49,7 +51,8 @@ namespace Infrastructure.Mappers
                             email,
                             adress,
                             salary,
-                            exhaustionLevel);
+                            exhaustionLevel,
+                            dbWorker.HashedPassword);
 
                 default:
                     throw new ArgumentOutOfRangeException($"Unsupported worker role: {dbWorker.Role}");
@@ -69,6 +72,7 @@ namespace Infrastructure.Mappers
             dbWorker.HomeAdress = coreWorker.Adress;
             dbWorker.Salary = coreWorker.Salary;
             dbWorker.ExaustionLevel = coreWorker.ExhaustionLevel;
+            dbWorker.HashedPassword = coreWorker.Password;
 
             if (coreWorker is Manager)
             {

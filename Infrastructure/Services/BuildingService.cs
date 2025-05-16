@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Interfaces;
+using Core.Models.Buildings;
 using Core.ValueObj;
 using Data_Access.Entities;
 using Infrastructure.Creational;
@@ -64,6 +65,66 @@ namespace Infrastructure.Services
             var b = _repository.GetById(id);
             if (b.Owner.Id != ownerid) throw new InvalidOperationException("You don`t have building with such id");
             _repository.Delete(id);
+        }
+
+        public void AddGoods(Product p, int q, int buildingId)
+        {
+            var b = _repository.GetById(buildingId);
+            var trueb = _mapper.MapFromDb(b);
+            if (trueb is Warehouse warehouse)
+            {
+                warehouse.AddProduct(p, q);
+                var newb = _mapper.MapToDb(warehouse, b.Owner);
+                newb.Id = b.Id;
+                _repository.Update(newb);
+            }
+            else throw new InvalidOperationException("Can`t get goods on store");
+        }
+
+        public void Export(Product product, int q, int fromid, int toid)
+        {
+            var w = _repository.GetById(fromid);
+            var s = _repository.GetById(toid);
+            var warehouse = _mapper.MapFromDb(w);
+            var store = _mapper.MapFromDb(s);
+
+            if (warehouse is Warehouse wh && store is Store st)
+            {
+                wh.Export(new Dictionary<Product, int>() { { product, q } }, st);
+            }
+            else throw new InvalidOperationException("Not warehouse and store chosen");
+
+            var neww = _mapper.MapToDb(wh, w.Owner);
+            var news = _mapper.MapToDb(st, w.Owner);
+
+            neww.Id = w.Id;
+            news.Id = s.Id;
+
+            _repository.Update(neww);
+            _repository.Update(news);
+        }
+
+        public void Import(Product product, int q, int fromid, int toid)
+        {
+            var w = _repository.GetById(fromid);
+            var s = _repository.GetById(toid);
+            var warehouse = _mapper.MapFromDb(w);
+            var store = _mapper.MapFromDb(s);
+
+            if (warehouse is Warehouse wh && store is Store st)
+            {
+                st.Import(new Dictionary<Product, int>() { { product, q } }, wh);
+            }
+            else throw new InvalidOperationException("Not warehouse and store chosen");
+
+            var neww = _mapper.MapToDb(wh, w.Owner);
+            var news = _mapper.MapToDb(st, w.Owner);
+
+            neww.Id = w.Id;
+            news.Id = s.Id;
+
+            _repository.Update(neww);
+            _repository.Update(news);
         }
     }
 }

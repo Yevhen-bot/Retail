@@ -17,14 +17,14 @@ namespace Infrastructure.Creational
             return new Warehouse(area, name, adress);
         }
 
-        public Manager GetManager(Name name, Age birthdate, Email email, Adress adress, Salary salary)
+        public Manager GetManager(Name name, Age birthdate, Email email, Adress adress, Salary salary, string pw)
         {
-            return new Manager(name, birthdate, email, adress, salary);
+            return new Manager(name, birthdate, email, adress, salary, pw);
         }
 
-        public Worker GetWorker(Name name, Age birthdate, Email email, Adress adress, Salary salary)
+        public Worker GetWorker(Name name, Age birthdate, Email email, Adress adress, Salary salary, string pw)
         {
-            return new Warehouse_Worker(name, birthdate, email, adress, salary);
+            return new Warehouse_Worker(name, birthdate, email, adress, salary, pw);
         }
     }
 }

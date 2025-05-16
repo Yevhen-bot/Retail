@@ -55,7 +55,6 @@ namespace Data_Access.Repos
                 .Include(b => b.Workers)
                 .Include(b => b.Clients)
                 .Include(b => b.Owner)
-                .AsNoTracking()
                 .FirstOrDefault(b => b.Id == id);
 
             if (building == null) throw new InvalidOperationException("Building not found");
