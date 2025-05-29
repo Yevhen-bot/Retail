@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  api:
+    image: retail-api:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    container_name: retail-api-app
+    environment: 
+      - ConnectionStrings__Database=server=db;user=retail_user;database=retail-db;password=poison321
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    # volumes:
+    #   - .:/app  
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  db: 
+    image: mysql:8
+    container_name: retail-api-db
+    environment:
+      MYSQL_ROOT_PASSWORD: poison321
+      MYSQL_DATABASE: retail-db
+      MYSQL_USER: retail_user
+      MYSQL_PASSWORD: poison321
+    ports: 
+      - "3307:3306"
+    volumes:
+      - data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=poison321"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  data:
+    

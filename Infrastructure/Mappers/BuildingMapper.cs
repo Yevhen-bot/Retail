@@ -24,7 +24,8 @@ namespace Infrastructure.Mappers
         {
             var workers = b.Workers.Select(w => _workerMapper.MapFromDb(w)).ToList();
             var manager = workers.FirstOrDefault(w => w is Manager) as Manager;
-            workers.Remove(manager ?? throw new ArgumentNullException("No manager in this building"));
+            if(manager != null)
+                workers.Remove(manager);
 
             IBuilding v = b.Role.RoleName switch
             {
@@ -33,7 +34,8 @@ namespace Infrastructure.Mappers
                 _ => throw new ArgumentException("Unknown building type")
             };
 
-            v.AddManager(manager);
+            if(manager != null)
+                v.AddManager(manager);
             foreach (var worker in workers)
             {
                 v.AddWorker(worker);

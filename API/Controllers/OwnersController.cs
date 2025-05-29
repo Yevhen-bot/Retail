@@ -3,6 +3,7 @@ using API.Mappers;
 using Core.Interfaces;
 using Data_Access.Repos;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,6 +52,7 @@ namespace API.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "Owner")]
         [HttpPost("simulate_day")]
         public IActionResult SimulateDay()
         {
