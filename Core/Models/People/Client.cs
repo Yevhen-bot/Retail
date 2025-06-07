@@ -35,8 +35,9 @@ namespace Core.Models.People
         public List<Product> Preferenc => _preferences.ToList();
         public List<Order> Orders => _orders.ToList();
 
-        public Client(Name name, Age age, Salary salary, Dictionary<Product, int> products, decimal money, HashSet<Product> preferences = null, string? password = null, List<Order> orders = null)
+        public Client(Email email, Name name, Age age, Salary salary, Dictionary<Product, int> products, decimal money, HashSet<Product> preferences = null, string? password = null, List<Order> orders = null)
         {
+            _email = email;
             _name = name;
             _age = age;
             _salary = salary;
@@ -71,15 +72,21 @@ namespace Core.Models.People
             _money += _salary.GetPayForDay();
         }
 
-        public void Buy(Dictionary<Product, int> products, Store store)
+        public bool Buy(Dictionary<Product, int> products, Store store)
         {
-            double price = store.TrySell(this, products, _preferences);
+            var (price, isnewclient) = store.TrySell(this, products, _preferences);
             if(price > (double)_money)
             {
                 throw new ArgumentOutOfRangeException("Not enough money.");
             }
-            else store.Sell(products);
+            else
+            {
+                store.Sell(products);
+                _money -= (decimal)price;
+            }
             _orders.Add(new Order(products, Store.GetPreferenceConst(), _preferences));
+            
+            return isnewclient;
         }
 
         public void AddPreference(Product product)

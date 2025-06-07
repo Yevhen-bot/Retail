@@ -52,10 +52,10 @@ namespace Infrastructure.Services
         public void AddManager(Name name, Age birthdate, Email email, Adress adress, Salary salary, string password, int buildingId)
         {
             var building = _buildingRepo.GetById(buildingId);
-            var actualbuilding = _buildingmapper.MapFromDb(building);
+            var (actualbuilding, ids, cids) = _buildingmapper.MapFromDb(building);
             var manager = _storeF.GetManager(name, birthdate, email, adress, salary, _passwordService.HashPassword(null, password));
             actualbuilding.AddManager(manager);
-            var b = _buildingmapper.MapToDb(actualbuilding, _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("id")?.Value)));    
+            var b = _buildingmapper.MapToDb(actualbuilding, ids, cids, _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("id")?.Value)));    
             b.Id = buildingId;
             _buildingRepo.Update(b);
         }
@@ -63,13 +63,13 @@ namespace Infrastructure.Services
         public void AddWorker(Name name, Age birthdate, Email email, Adress adress, Salary salary, string password, int buildingId)
         {
             var building = _buildingRepo.GetById(buildingId);
-            var actualbuilding = _buildingmapper.MapFromDb(building);
+            var (actualbuilding, ids, cindx) = _buildingmapper.MapFromDb(building);
             Core.Models.People.Worker worker;
             if (actualbuilding is Store) worker = _storeF.GetWorker(name, birthdate, email, adress, salary, _passwordService.HashPassword(null, password));
             else worker = _warehF.GetWorker(name, birthdate, email, adress, salary, _passwordService.HashPassword(null, password));
 
             actualbuilding.AddWorker(worker);
-            var b = _buildingmapper.MapToDb(actualbuilding, building.Owner);
+            var b = _buildingmapper.MapToDb(actualbuilding, ids, cindx, building.Owner);
             b.Id = buildingId;
             _buildingRepo.Update(b);
         }

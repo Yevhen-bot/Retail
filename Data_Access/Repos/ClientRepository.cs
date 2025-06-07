@@ -53,7 +53,7 @@ namespace Data_Access.Repos
 
         public Client GetById(int id)
         {
-            var client = _context.Clients.AsNoTracking().FirstOrDefault(o => o.Id == id);
+            var client = _context.Clients.AsNoTracking().Include(c => c.Orders).Include(c => c.Preferences).FirstOrDefault(o => o.Id == id);
             if (client == null)
             {
                 throw new ArgumentNullException("Client not found");
@@ -88,6 +88,9 @@ namespace Data_Access.Repos
             client.Salary = entity.Salary;
             client.Money = entity.Money;
             client.HashedPassword = entity.HashedPassword;
+            client.Orders = entity.Orders;
+            client.Preferences = entity.Preferences;
+
             _context.SaveChanges();
         }
     }

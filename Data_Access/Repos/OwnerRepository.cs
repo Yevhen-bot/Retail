@@ -59,7 +59,7 @@ namespace Data_Access.Repos
 
         public Owner GetByIdWithTrack(int id)
         {
-            var owner = _context.Owners.Find(id);
+            var owner = _context.Owners.Include(o => o.Buildings).ThenInclude(b => b.Workers).First(o => o.Id == id);
 
             if (owner == null)
             {

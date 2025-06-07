@@ -55,8 +55,8 @@ namespace Infrastructure.Services
 
             foreach(var b in buildings)
             {
-                b.Item1.SimulateDay();
-                var tosave = _buildingMapper.MapToDb(b.Item1, owner);
+                b.Item1.Item1.SimulateDay();
+                var tosave = _buildingMapper.MapToDb(b.Item1.Item1, b.Item1.Item2, b.Item1.Item3, owner);
                 tosave.Id = b.Id;
                 _buildingrepository.Update(tosave);
             }

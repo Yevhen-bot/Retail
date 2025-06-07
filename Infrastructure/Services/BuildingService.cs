@@ -51,11 +51,11 @@ namespace Infrastructure.Services
             {
                 case "Store":
                     var store = _storeF.GetBuilding(area, name, adress);
-                    _repository.Add(_mapper.MapToDb(store, _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("Id")?.Value))));
+                    _repository.Add(_mapper.MapToDb(store, new List<int>(), new List<int>(), _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("Id")?.Value))));
                     break;
                 case "Warehouse":
                     var w = _warehF.GetBuilding(area, name, adress);
-                    _repository.Add(_mapper.MapToDb(w, _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("Id")?.Value))));
+                    _repository.Add(_mapper.MapToDb(w, new List<int>(), new List<int>(), _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("Id")?.Value))));
                     break;
             }
         }
@@ -70,11 +70,11 @@ namespace Infrastructure.Services
         public void AddGoods(Product p, int q, int buildingId)
         {
             var b = _repository.GetById(buildingId);
-            var trueb = _mapper.MapFromDb(b);
+            var (trueb, indx, cindx) = _mapper.MapFromDb(b);
             if (trueb is Warehouse warehouse)
             {
                 warehouse.AddProduct(p, q);
-                var newb = _mapper.MapToDb(warehouse, b.Owner);
+                var newb = _mapper.MapToDb(warehouse, indx, cindx, b.Owner);
                 newb.Id = b.Id;
                 _repository.Update(newb);
             }
@@ -85,8 +85,8 @@ namespace Infrastructure.Services
         {
             var w = _repository.GetById(fromid);
             var s = _repository.GetById(toid);
-            var warehouse = _mapper.MapFromDb(w);
-            var store = _mapper.MapFromDb(s);
+            var (warehouse, indx1, c) = _mapper.MapFromDb(w);
+            var (store, indx2, cindx) = _mapper.MapFromDb(s);
 
             if (warehouse is Warehouse wh && store is Store st)
             {
@@ -94,8 +94,8 @@ namespace Infrastructure.Services
             }
             else throw new InvalidOperationException("Not warehouse and store chosen");
 
-            var neww = _mapper.MapToDb(wh, w.Owner);
-            var news = _mapper.MapToDb(st, w.Owner);
+            var neww = _mapper.MapToDb(wh, indx1, c, w.Owner);
+            var news = _mapper.MapToDb(st, indx2, cindx, w.Owner);
 
             neww.Id = w.Id;
             news.Id = s.Id;
@@ -108,8 +108,8 @@ namespace Infrastructure.Services
         {
             var w = _repository.GetById(fromid);
             var s = _repository.GetById(toid);
-            var warehouse = _mapper.MapFromDb(w);
-            var store = _mapper.MapFromDb(s);
+            var (warehouse, indx1, cindx1) = _mapper.MapFromDb(w);
+            var (store, indx2, cindx2) = _mapper.MapFromDb(s);
 
             if (warehouse is Warehouse wh && store is Store st)
             {
@@ -117,8 +117,8 @@ namespace Infrastructure.Services
             }
             else throw new InvalidOperationException("Not warehouse and store chosen");
 
-            var neww = _mapper.MapToDb(wh, w.Owner);
-            var news = _mapper.MapToDb(st, w.Owner);
+            var neww = _mapper.MapToDb(wh, indx1, cindx1, w.Owner);
+            var news = _mapper.MapToDb(st, indx1, cindx2, w.Owner);
 
             neww.Id = w.Id;
             news.Id = s.Id;

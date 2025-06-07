@@ -158,13 +158,8 @@ namespace Core.Models.Buildings
             }
         }
 
-        public double TrySell(Client client, Dictionary<Product, int> products, HashSet<Product> pref)
+        public (double, bool) TrySell(Client client, Dictionary<Product, int> products, HashSet<Product> pref)
         {
-            if(!_clients.Contains(client))
-            {
-                _clients.Add(client);
-            }
-
             double price = 0;
             foreach (var el in products)
             {
@@ -183,7 +178,14 @@ namespace Core.Models.Buildings
                     throw new ArgumentOutOfRangeException(nameof(el.Key), el.Key, "We don`t have this item");
             }
 
-            return price;
+            bool isnewclient = false;
+            if (!_clients.Any(c => c.Email == client.Email))
+            {
+                _clients.Add(client);
+                isnewclient = true;
+            }
+
+            return (price, isnewclient);
         }
 
         public void Sell(Dictionary<Product, int> products)

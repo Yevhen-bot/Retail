@@ -60,7 +60,7 @@ namespace API.Controllers
                 _service.MakeOrder((Product)l[0], (int)l[1], (int)l[2]);
             } catch(Exception e)
             {
-                return BadRequest(e);
+                return BadRequest(e.Message);
             }
 
             return Ok();

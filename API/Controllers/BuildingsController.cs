@@ -41,7 +41,7 @@ namespace API.Controllers
                 b = _service.GetBuilding(int.Parse(HttpContext.User.FindFirst("Id")?.Value), id);
             } catch(Exception e)
             {
-                return BadRequest(e);
+                return BadRequest(e.Message);
             }
 
             return Ok(_mapper.GetBuildingModels([b])[0]);
@@ -83,7 +83,7 @@ namespace API.Controllers
                 _service.AddGoods((Product)l[0], (int)l[1], (int)l[2]);
             } catch(Exception e)
             {
-                return BadRequest(e);
+                return BadRequest(e.Message);
             }
 
             return Ok();

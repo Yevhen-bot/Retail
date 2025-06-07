@@ -9,6 +9,8 @@ using Infrastructure.Mappers;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
+// TO DO: verify buy endpoint valid adding orders, log out, manage proper adding new worker, unique emails, better validation
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();

@@ -5,6 +5,7 @@ using Core.Interfaces;
 using Core.Models.Buildings;
 using Core.Models.People;
 using Core.ValueObj;
+using Data_Access.Adapters;
 using Data_Access.Entities;
 
 namespace Infrastructure.Mappers
@@ -20,16 +21,29 @@ namespace Infrastructure.Mappers
             _clientMapper = cp;
         }
 
-        public IBuilding MapFromDb(Building b)
+        public (IBuilding, List<int>, List<int>) MapFromDb(Building b)
         {
-            var workers = b.Workers.Select(w => _workerMapper.MapFromDb(w)).ToList();
+            List<int> ids = [];
+            List<int> cids = [];
+            int managerid = 0;
+            var workers = b.Workers.Select(w => {
+                var r = _workerMapper.MapFromDb(w);
+                if(r is Manager) managerid = w.Id;
+                else ids.Add(w.Id);
+                return r;
+            }).ToList();
+            ids = ids.Prepend(managerid).ToList();
             var manager = workers.FirstOrDefault(w => w is Manager) as Manager;
-            if(manager != null)
+            if (manager != null)
                 workers.Remove(manager);
 
             IBuilding v = b.Role.RoleName switch
             {
-                nameof(Store) => new Store(b.Name, b.Adress, b.Area, b.Products.ToDictionary(p => p.Product, p => p.Quantity), b.Clients.Select(c => _clientMapper.MapFromDb(c)).ToList()),
+                nameof(Store) => new Store(b.Name, b.Adress, b.Area, b.Products.ToDictionary(p => p.Product, p => p.Quantity), b.Clients.Select(c =>
+                {
+                    cids.Add(c.Id);
+                    return _clientMapper.MapFromDb(c);
+                }).ToList()),
                 nameof(Warehouse) => new Warehouse(b.Name, b.Adress, b.Area, b.Products.ToDictionary(p => p.Product, p => p.Quantity)),
                 _ => throw new ArgumentException("Unknown building type")
             };
@@ -41,14 +55,24 @@ namespace Infrastructure.Mappers
                 v.AddWorker(worker);
             }
 
-            return v;
+            return (v, ids, cids);
         }
 
-        public Building MapToDb(IBuilding b, Owner owner)
+        public Building MapToDb(IBuilding b, List<int> ids, List<int> cids, Owner owner)
         {
-            var workers = b.Workers.Select(w => _workerMapper.MapToDb(w)).ToList();
-            if(b.Manager!=null)
-                workers.Add(_workerMapper.MapToDb(b.Manager));
+            int counter = 1;
+            var workers = b.Workers.Select(w =>
+            {
+                var v = _workerMapper.MapToDb(w);
+                if(counter < ids.Count) v.Id = ids[counter++];
+                return v;
+            }).ToList();
+            if (b.Manager != null)
+            {
+                var v = _workerMapper.MapToDb(b.Manager);
+                v.Id = ids[0];
+                workers.Add(v);
+            }
 
             var role = b switch
             {
@@ -57,18 +81,31 @@ namespace Infrastructure.Mappers
                 _ => throw new ArgumentException("Unknown building type")
             };
 
-            var newb =  new Building()
+            var newb = new Building()
             {
                 Name = b.Name,
                 Area = b.Area,
                 Adress = b.Adress,
                 Role = role,
                 Workers = workers,
+                Products = b.Products.Select(p => {
+                    var pr = new ProductWrapper();
+                    pr.Product = p.Key;
+                    pr.Quantity = p.Value;
+                    return pr;
+                }).ToList()
             };
 
             if(b is Store store)
             {
-                newb.Clients = store.Clients.Select(c => _clientMapper.MapToDb(c)).ToList();
+                counter = 0;
+                newb.Clients = store.Clients.Select(c =>
+                {
+                    var x = _clientMapper.MapToDb(c);
+                    if(counter < cids.Count)
+                        x.Id = cids[counter++];
+                    return x;
+                }).ToList();
             }
             newb.Owner = owner;
 

@@ -64,7 +64,7 @@ namespace Data_Access.Repos
 
         public void Update(Building entity)
         {
-            var b = _context.Buildings.Find(entity.Id);
+            var b = _context.Buildings.Include(e => e.Clients).Include(e => e.Workers).First(e => e.Id == entity.Id);
 
             if(b == null) throw new InvalidOperationException("Building not found");
 
@@ -72,6 +72,8 @@ namespace Data_Access.Repos
             b.Area = entity.Area;
             b.Adress = entity.Adress;
             b.Role = entity.Role;
+            b.Workers = entity.Workers;
+            b.Products = entity.Products;
             _context.SaveChanges();
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Data.SqlTypes;
 using API.DTOs;
 using Core.ValueObj;
+using Data_Access.Adapters;
 using Data_Access.Entities;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -40,9 +41,48 @@ namespace API.Mappers
                 Area = b.Area,
                 Type = b.Role.RoleName,
                 Adress = $"{b.Adress.Country}, {b.Adress.City}, {b.Adress.Street}, {b.Adress.HouseNumber}",
-                Products = b.Products,
-                Workers = b.Workers,
-                Clients = b.Clients
+                Products = GetProductModels(b.Products),
+                Workers = GetWorkerModels(b.Workers),
+                Clients = GetClientsModels(b.Clients)
+            }).ToList();
+        }
+
+        public List<GetClientModel> GetClientsModels(List<Client> clients)
+        {
+            return clients.Select(c => new GetClientModel
+            {
+                Id = c.Id,
+                Money = c.Money,
+                Name = c.Name,
+                Preferences = GetProductModels(c.Preferences),
+                Age = c.Age,
+                Email = c.Email,
+                Salary = c.Salary
+            }).ToList();
+        }
+
+        public List<GetWorkerModel> GetWorkerModels(List<Worker> workers)
+        {
+            return workers.Select(w => new GetWorkerModel
+            {
+                Name = w.Name,
+                Salary = w.Salary,
+                Age = w.Age,
+                Email = w.Email,
+                ExaustionLevel = w.ExaustionLevel,
+                HomeAdress = w.HomeAdress,
+                Id = w.Id
+            }).ToList();
+        }
+
+        public List<GetProductModel> GetProductModels(List<ProductWrapper> products)
+        {
+            return products.Select(p => new GetProductModel
+            {
+                MPU = p.MPU,
+                Price = p.Price,
+                Quantity = p.Quantity,
+                Name = p.Name
             }).ToList();
         }
 

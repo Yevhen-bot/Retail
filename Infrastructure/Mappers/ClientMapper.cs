@@ -21,6 +21,7 @@ namespace Infrastructure.Mappers
         public Core.Models.People.Client MapFromDb(Data_Access.Entities.Client dbc)
         {
             return new Core.Models.People.Client(
+                dbc.Email,
                 dbc.Name,
                 dbc.Age,
                 dbc.Salary,
