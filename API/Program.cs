@@ -47,6 +47,12 @@ builder.Services.AddScoped<OwnerService>();
 builder.Services.AddScoped<BuildingService>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<WorkerService>();
+builder.Services.AddScoped<CacheService>();
+
+builder.Services.AddMemoryCache(opt =>
+{
+    opt.SizeLimit = 1024;
+});
 
 builder.Services.AddHttpContextAccessor();
 

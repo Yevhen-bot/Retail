@@ -16,19 +16,29 @@ namespace API.Controllers
     {
         private readonly BuildingService _service;
         private readonly Mapper _mapper;
+        private readonly CacheService _cache;
+        private static string _cacheKey = "Buildings";
 
-        public BuildingsController(BuildingService r, Mapper m)
+        public BuildingsController(BuildingService r, Mapper m, CacheService cache)
         {
             _service = r;
             _mapper = m;
+            _cache = cache;
         }
 
         [Authorize(Policy = "Owner")]
         [HttpGet]
         public IActionResult GetAll()
         {
-            var b = _service.GetBuildings(int.Parse(HttpContext.User.FindFirst("Id")?.Value));
-            return Ok(new { Buildings = _mapper.GetBuildingModels(b)});
+            var ownerid = int.Parse(HttpContext.User.FindFirst("Id")?.Value);
+
+            if (!_cache.GetValue(_cacheKey + ownerid, out List<Building> col))
+            {
+                col = _service.GetBuildings(ownerid);
+                _cache.SetValue(_cacheKey + ownerid, col, 2);
+            }
+
+            return Ok(new { Buildings = _mapper.GetBuildingModels(col)});
         }
 
         [Authorize(Policy = "Owner")]
@@ -51,6 +61,8 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult AddBuilding([FromBody] CreateBuildingModel m)
         {
+            _cache.RemoveValue(_cacheKey + int.Parse(HttpContext.User.FindFirst("Id")?.Value));
+            
             var objs = _mapper.CreateBuilding(m);
             _service.CreateBuilding((string)objs[0], (double)objs[1], (Adress)objs[2], (BuildingRole)objs[3]);
 
@@ -64,6 +76,7 @@ namespace API.Controllers
             try
             {
                 _service.DeleteBuilding(int.Parse(HttpContext.User.FindFirst("Id")?.Value), id);
+                _cache.RemoveValue(_cacheKey + int.Parse(HttpContext.User.FindFirst("Id")?.Value));
             }
             catch (Exception e)
             {
@@ -81,6 +94,7 @@ namespace API.Controllers
             try
             {
                 _service.AddGoods((Product)l[0], (int)l[1], (int)l[2]);
+                _cache.RemoveValue(_cacheKey + int.Parse(HttpContext.User.FindFirst("Id")?.Value));
             } catch(Exception e)
             {
                 return BadRequest(e.Message);
@@ -97,6 +111,7 @@ namespace API.Controllers
             try
             {
                 _service.Export((Product)l[0], (int)l[1], (int)l[2], (int)l[3]);
+                _cache.RemoveValue(_cacheKey + int.Parse(HttpContext.User.FindFirst("Id")?.Value));
             }
             catch (Exception e)
             {
@@ -114,6 +129,7 @@ namespace API.Controllers
             try
             {
                 _service.Import((Product)l[0], (int)l[1], (int)l[2], (int)l[3]);
+                _cache.RemoveValue(_cacheKey + int.Parse(HttpContext.User.FindFirst("Id")?.Value));
             }
             catch (Exception e)
             {
