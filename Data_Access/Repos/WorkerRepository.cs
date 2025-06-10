@@ -38,7 +38,7 @@ namespace Data_Access.Repos
 
         public Worker GetByIdWithTrack(int id)
         {
-            var owner = _context.Workers.Find(id);
+            var owner = _context.Workers.Include(e => e.Building).ThenInclude(e => e.Workers).FirstOrDefault(e => e.Id == id);
 
             if (owner == null)
             {
@@ -55,7 +55,7 @@ namespace Data_Access.Repos
 
         public Worker GetById(int id)
         {
-            var worker = _context.Workers.AsNoTracking().FirstOrDefault(o => o.Id == id);
+            var worker = _context.Workers.Include(e => e.Building).ThenInclude(e => e.Workers).FirstOrDefault(o => o.Id == id);
             if (worker == null)
             {
                 throw new ArgumentNullException("Worker not found");

@@ -26,6 +26,8 @@ namespace Infrastructure.Services
         private readonly BuildingMapper _buildingmapper;
         private readonly HttpContext _context;
         private readonly JwtProvider _jwtProvider;
+        private readonly RedisService _cache;
+        private static string _cachekey = "Workers";
 
         public WorkerService(
             IUserRepository<Worker> ownerRepo,
@@ -36,7 +38,8 @@ namespace Infrastructure.Services
             IUserRepository<Owner> ownr,
             PasswordService<Worker> passwordService,
             IHttpContextAccessor context,
-            JwtProvider jwtProvider)
+            JwtProvider jwtProvider,
+            RedisService cache)
         {
             _userRepo = ownerRepo ?? throw new ArgumentNullException(nameof(ownerRepo));
             _storeF = storeF ?? throw new ArgumentNullException(nameof(storeF));
@@ -47,6 +50,7 @@ namespace Infrastructure.Services
             _ownerRepo = ownr ?? throw new ArgumentNullException(nameof(ownr));
             _passwordService = passwordService ?? throw new ArgumentNullException(nameof(passwordService));
             _jwtProvider = jwtProvider;
+            _cache = cache;
         }
 
         public void AddManager(Name name, Age birthdate, Email email, Adress adress, Salary salary, string password, int buildingId)
@@ -72,6 +76,26 @@ namespace Infrastructure.Services
             var b = _buildingmapper.MapToDb(actualbuilding, ids, cindx, building.Owner);
             b.Id = buildingId;
             _buildingRepo.Update(b);
+
+            _cache.RemoveValue(_cachekey + int.Parse(_context.User.FindFirst("Id")?.Value));
+        }
+
+        public async Task<List<Worker>> GetWorkers()
+        {
+            var managerId = int.Parse(_context.User.FindFirst("Id")?.Value);
+
+            List<Worker> workers = await _cache.GetValue<List<Worker>>(_cachekey + managerId);
+
+            if(workers == null)
+            {
+                var manager = _userRepo.GetById(managerId);
+                workers = manager.Building.Workers.ToList();
+                workers.ForEach(e => e.Building = null);
+
+                await _cache.SetValue(_cachekey + managerId, workers);
+            }
+
+            return workers;
         }
 
         public void Login(string password, string email)

@@ -48,10 +48,15 @@ builder.Services.AddScoped<BuildingService>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<WorkerService>();
 builder.Services.AddScoped<CacheService>();
+builder.Services.AddScoped<RedisService>();
 
 builder.Services.AddMemoryCache(opt =>
 {
     opt.SizeLimit = 1024;
+});
+builder.Services.AddStackExchangeRedisCache(opt =>
+{
+    opt.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 
 builder.Services.AddHttpContextAccessor();

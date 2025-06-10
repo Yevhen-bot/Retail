@@ -11,6 +11,7 @@ services:
     container_name: retail-api-app
     environment: 
       - ConnectionStrings__Database=server=db;user=retail_user;database=retail-db;password=poison321
+      - ConnectionStrings__Redis=redis:6379
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
     # volumes:
@@ -18,7 +19,22 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
+
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
 
   db: 
     image: mysql:8

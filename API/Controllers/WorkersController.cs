@@ -69,5 +69,19 @@ namespace API.Controllers
 
             return Ok();
         }
+
+        [Authorize(Policy = "Manager")]
+        [HttpGet]
+        public IActionResult GetWorkers()
+        {
+            try
+            {
+                return Ok(new { Workers = _workerService.GetWorkers().Result });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }
