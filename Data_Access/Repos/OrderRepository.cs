@@ -17,33 +17,33 @@ namespace Data_Access.Repos
             _context = context;
         }
 
-        public void Add(Order entity)
+        public async Task Add(Order entity)
         {
             _context.Orders.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var order = _context.Orders.Find(id);
+            var order = await _context.Orders.FindAsync(id);
             if (order != null)
             {
                 _context.Orders.Remove(order);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             else throw new ArgumentNullException("Order not found.");
         }
-        public Order GetById(int id)
+        public async Task<Order> GetById(int id)
         {
-            var order = _context.Orders.Include(o => o.Client).Include(o => o.Products).FirstOrDefault(o => o.Id == id);
+            var order = await _context.Orders.Include(o => o.Client).Include(o => o.Products).FirstOrDefaultAsync(o => o.Id == id);
             if(order == null) throw new ArgumentNullException("Order not found.");
 
             return order;
         }
-        public List<Order> GetAll()
+        public async Task<List<Order>> GetAll()
         {
-            return _context.Orders.Include(o => o.Client).Include(o => o.Products).ToList();
+            return await _context.Orders.Include(o => o.Client).Include(o => o.Products).ToListAsync();
         }
-        public void Update(Order entity)
+        public async Task Update(Order entity)
         {
             throw new InvalidOperationException("Updation of order is forbidden");
         }

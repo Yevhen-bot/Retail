@@ -21,11 +21,11 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] ClientRegistration m)
+        public async Task<IActionResult> Register([FromBody] ClientRegistration m)
         {
             try
             {
-                _service.Register(_mapper.RegisterClient(m));
+                await _service.Register(_mapper.RegisterClient(m));
             }
             catch (Exception e)
             {
@@ -36,11 +36,11 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel m)
+        public async Task<IActionResult> Login([FromBody] LoginModel m)
         {
             try
             {
-                _service.Login(m.Password, m.Email);
+                await _service.Login(m.Password, m.Email);
             }
             catch (Exception e)
             {
@@ -52,12 +52,12 @@ namespace API.Controllers
 
         [Authorize(Policy = "Client")]
         [HttpPut("buy")]
-        public IActionResult Buy([FromBody] SellModel m)
+        public async Task<IActionResult> Buy([FromBody] SellModel m)
         {
             var l = _mapper.Buy(m);
             try
             {
-                _service.MakeOrder((Product)l[0], (int)l[1], (int)l[2]);
+                await _service.MakeOrder((Product)l[0], (int)l[1], (int)l[2]);
             } catch(Exception e)
             {
                 return BadRequest(e.Message);

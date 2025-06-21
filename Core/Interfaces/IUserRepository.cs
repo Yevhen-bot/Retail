@@ -2,8 +2,8 @@
 {
     public interface IUserRepository<TEntity> : IRepository<TEntity>
     {
-        TEntity GetByEmail(string email);
+        Task<TEntity> GetByEmail(string email);
 
-        TEntity GetByIdWithTrack(int id);
+        Task<TEntity> GetByIdWithTrack(int id);
     }
 }

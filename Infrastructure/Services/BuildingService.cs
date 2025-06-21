@@ -31,60 +31,61 @@ namespace Infrastructure.Services
             _context = a.HttpContext;
         }
 
-        public Building GetBuilding(int ownerid, int id)
+        public async Task<Building> GetBuilding(int ownerid, int id)
         {
-            var b = _repository.GetById(id);
+            var b = await _repository.GetById(id);
             if (b.Owner.Id != ownerid) throw new InvalidOperationException("You don`t have building with such id");
 
             return b;
         }
 
-        public List<Building> GetBuildings(int ownerid)
+        public async Task<List<Building>> GetBuildings(int ownerid)
         {
-            var b = _repository.GetAll().AsQueryable().Where(b => b.Owner.Id == ownerid).ToList();
+            var b = await _repository.GetAll();
+            b = b.AsQueryable().Where(b => b.Owner.Id == ownerid).ToList();
             return b;
         }
 
-        public void CreateBuilding(string name, double area, Adress adress, BuildingRole role)
+        public async Task CreateBuilding(string name, double area, Adress adress, BuildingRole role)
         {
             switch(role.RoleName)
             {
                 case "Store":
                     var store = _storeF.GetBuilding(area, name, adress);
-                    _repository.Add(_mapper.MapToDb(store, new List<int>(), new List<int>(), _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("Id")?.Value))));
+                    _repository.Add(_mapper.MapToDb(store, new List<int>(), new List<int>(), await _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("Id")?.Value))));
                     break;
                 case "Warehouse":
                     var w = _warehF.GetBuilding(area, name, adress);
-                    _repository.Add(_mapper.MapToDb(w, new List<int>(), new List<int>(), _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("Id")?.Value))));
+                    _repository.Add(_mapper.MapToDb(w, new List<int>(), new List<int>(), await _ownerRepo.GetByIdWithTrack(int.Parse(_context.User.FindFirst("Id")?.Value))));
                     break;
             }
         }
 
-        public void DeleteBuilding(int ownerid, int id)
+        public async Task DeleteBuilding(int ownerid, int id)
         {
-            var b = _repository.GetById(id);
+            var b = await _repository.GetById(id);
             if (b.Owner.Id != ownerid) throw new InvalidOperationException("You don`t have building with such id");
-            _repository.Delete(id);
+            await _repository.Delete(id);
         }
 
-        public void AddGoods(Product p, int q, int buildingId)
+        public async Task AddGoods(Product p, int q, int buildingId)
         {
-            var b = _repository.GetById(buildingId);
+            var b = await _repository.GetById(buildingId);
             var (trueb, indx, cindx) = _mapper.MapFromDb(b);
             if (trueb is Warehouse warehouse)
             {
                 warehouse.AddProduct(p, q);
                 var newb = _mapper.MapToDb(warehouse, indx, cindx, b.Owner);
                 newb.Id = b.Id;
-                _repository.Update(newb);
+                await _repository.Update(newb);
             }
             else throw new InvalidOperationException("Can`t get goods on store");
         }
 
-        public void Export(Product product, int q, int fromid, int toid)
+        public async Task Export(Product product, int q, int fromid, int toid)
         {
-            var w = _repository.GetById(fromid);
-            var s = _repository.GetById(toid);
+            var w = await _repository.GetById(fromid);
+            var s = await _repository.GetById(toid);
             var (warehouse, indx1, c) = _mapper.MapFromDb(w);
             var (store, indx2, cindx) = _mapper.MapFromDb(s);
 
@@ -100,14 +101,14 @@ namespace Infrastructure.Services
             neww.Id = w.Id;
             news.Id = s.Id;
 
-            _repository.Update(neww);
-            _repository.Update(news);
+            await _repository.Update(neww);
+            await _repository.Update(news);
         }
 
-        public void Import(Product product, int q, int fromid, int toid)
+        public async Task Import(Product product, int q, int fromid, int toid)
         {
-            var w = _repository.GetById(fromid);
-            var s = _repository.GetById(toid);
+            var w = await _repository.GetById(fromid);
+            var s = await _repository.GetById(toid);
             var (warehouse, indx1, cindx1) = _mapper.MapFromDb(w);
             var (store, indx2, cindx2) = _mapper.MapFromDb(s);
 
@@ -123,8 +124,8 @@ namespace Infrastructure.Services
             neww.Id = w.Id;
             news.Id = s.Id;
 
-            _repository.Update(neww);
-            _repository.Update(news);
+            await _repository.Update(neww);
+            await _repository.Update(news);
         }
     }
 }

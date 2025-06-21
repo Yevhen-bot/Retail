@@ -19,26 +19,26 @@ namespace Data_Access.Repos
             _context = context;
         }
 
-        public void Add(Worker entity)
+        public async Task Add(Worker entity)
         {
             _context.Workers.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var worker = _context.Workers.Find(id);
+            var worker = await _context.Workers.FindAsync(id);
             if (worker != null)
             {
                 _context.Workers.Remove(worker);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             else throw new ArgumentNullException("Worker not found");
         }
 
-        public Worker GetByIdWithTrack(int id)
+        public async Task<Worker> GetByIdWithTrack(int id)
         {
-            var owner = _context.Workers.Include(e => e.Building).ThenInclude(e => e.Workers).FirstOrDefault(e => e.Id == id);
+            var owner = await _context.Workers.Include(e => e.Building).ThenInclude(e => e.Workers).FirstOrDefaultAsync(e => e.Id == id);
 
             if (owner == null)
             {
@@ -48,14 +48,14 @@ namespace Data_Access.Repos
             return owner;
         }
 
-        public List<Worker> GetAll()
+        public async Task<List<Worker>> GetAll()
         {
-            return _context.Workers.AsNoTracking().ToList();
+            return await _context.Workers.AsNoTracking().ToListAsync();
         }
 
-        public Worker GetById(int id)
+        public async Task<Worker> GetById(int id)
         {
-            var worker = _context.Workers.Include(e => e.Building).ThenInclude(e => e.Workers).FirstOrDefault(o => o.Id == id);
+            var worker = await _context.Workers.Include(e => e.Building).ThenInclude(e => e.Workers).FirstOrDefaultAsync(o => o.Id == id);
             if (worker == null)
             {
                 throw new ArgumentNullException("Worker not found");
@@ -64,9 +64,9 @@ namespace Data_Access.Repos
             return worker;
         }
 
-        public Worker GetByEmail(string email)
+        public async Task<Worker> GetByEmail(string email)
         {
-            var worker = _context.Workers.AsNoTracking().FirstOrDefault(o => o.Email.EmailAddress == email);
+            var worker = await _context.Workers.AsNoTracking().FirstOrDefaultAsync(o => o.Email.EmailAddress == email);
             if (worker == null)
             {
                 throw new ArgumentNullException("Worker not found");
@@ -75,9 +75,9 @@ namespace Data_Access.Repos
             return worker;
         }
 
-        public void Update(Worker entity)
+        public async Task Update(Worker entity)
         {
-            var worker = _context.Workers.AsNoTracking().Include(w => w.Building).FirstOrDefault(w => w.Id == entity.Id);
+            var worker = await _context.Workers.AsNoTracking().Include(w => w.Building).FirstOrDefaultAsync(w => w.Id == entity.Id);
 
             if (worker == null)
             {
@@ -87,7 +87,7 @@ namespace Data_Access.Repos
             var b = worker.Building;
             _context.Workers.Update(entity);
             entity.Building = b;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -32,14 +32,14 @@ namespace Infrastructure.Services
             _buildingrepository = buildingrepository;
         }
 
-        public void Register(Owner owner)
+        public async Task Register(Owner owner)
         {
-            _ownerRepository.Add(owner);
+            await _ownerRepository.Add(owner);
         }
 
-        public void Login(string password, string email)
+        public async Task Login(string password, string email)
         {
-            var user = _ownerRepository.GetByEmail(email);
+            var user = await _ownerRepository.GetByEmail(email);
             ArgumentNullException.ThrowIfNull(user, "User with such email not found");
 
             if(_passwordService.VerifyPassword(user, password, user.HashedPassword)) {
@@ -48,9 +48,9 @@ namespace Infrastructure.Services
             } else throw new ArgumentException("Invalid Password");
         }
 
-        public void SimulateDay(int ownerid)
+        public async Task SimulateDay(int ownerid)
         {
-            var owner = _ownerRepository.GetByIdWithTrack(ownerid);
+            var owner = await _ownerRepository.GetByIdWithTrack(ownerid);
             var buildings = owner.Buildings.Select(b => (_buildingMapper.MapFromDb(b), b.Id));
 
             foreach(var b in buildings)
@@ -58,7 +58,7 @@ namespace Infrastructure.Services
                 b.Item1.Item1.SimulateDay();
                 var tosave = _buildingMapper.MapToDb(b.Item1.Item1, b.Item1.Item2, b.Item1.Item3, owner);
                 tosave.Id = b.Id;
-                _buildingrepository.Update(tosave);
+                await _buildingrepository.Update(tosave);
             }
         }
     }

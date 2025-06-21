@@ -27,6 +27,12 @@ builder.Services.AddScoped<IUserRepository<Worker>, WorkerRepository>();
 builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<IRepository<Building>, BuildingRepository>();
 
+builder.Services.Decorate<IUserRepository<Owner>, CachedOwnerRepository>();
+builder.Services.Decorate<IUserRepository<Client>, CachedClientRepository>();
+builder.Services.Decorate<IUserRepository<Worker>, CachedWorkerRepository>();
+builder.Services.Decorate<IRepository<Order>, CachedOrderRepository>();
+builder.Services.Decorate<IRepository<Building>, CachedBuildingRepository>();
+
 builder.Services.AddSingleton<StoreFactory>();
 builder.Services.AddSingleton<WarehouseFactory>();
 
@@ -47,13 +53,11 @@ builder.Services.AddScoped<OwnerService>();
 builder.Services.AddScoped<BuildingService>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<WorkerService>();
-builder.Services.AddScoped<CacheService>();
-builder.Services.AddScoped<RedisService>();
 
-builder.Services.AddMemoryCache(opt =>
-{
-    opt.SizeLimit = 1024;
-});
+//builder.Services.AddMemoryCache(opt =>
+//{
+//    opt.SizeLimit = 1024;
+//});
 builder.Services.AddStackExchangeRedisCache(opt =>
 {
     opt.Configuration = builder.Configuration.GetConnectionString("Redis");

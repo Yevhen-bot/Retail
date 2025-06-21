@@ -8,10 +8,10 @@ namespace Core.Interfaces
 {
     public interface IRepository<TEntity>
     {
-        List<TEntity> GetAll();
-        TEntity GetById(int id);
-        void Add(TEntity entity);
-        void Update(TEntity entity);
-        void Delete(int id);
+        Task<List<TEntity>> GetAll();
+        Task<TEntity> GetById(int id);
+        Task Add(TEntity entity);
+        Task Update(TEntity entity);
+        Task Delete(int id);
     }
 }

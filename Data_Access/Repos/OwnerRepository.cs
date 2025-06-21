@@ -17,30 +17,30 @@ namespace Data_Access.Repos
             _context = context;
         }
 
-        public void Add(Owner entity)
+        public async Task Add(Owner entity)
         {
             _context.Owners.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var owner = _context.Owners.Find(id);
+            var owner = await _context.Owners.FindAsync(id);
             if (owner != null)
             {
                 _context.Owners.Remove(owner);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             } else throw new ArgumentNullException("Owner not found");
         }
 
-        public List<Owner> GetAll()
+        public async Task<List<Owner>> GetAll()
         {
-            return _context.Owners.AsNoTracking().ToList();
+            return await _context.Owners.AsNoTracking().ToListAsync();
         }
 
-        public Owner GetById(int id)
+        public async Task<Owner> GetById(int id)
         {
-            var owner = _context.Owners
+            var owner = await _context.Owners
                 .AsNoTracking()
                 .Include(o => o.Buildings)
                 .ThenInclude(b => b.Products)
@@ -48,7 +48,7 @@ namespace Data_Access.Repos
                 .ThenInclude(b => b.Clients)
                 .Include(o => o.Buildings)
                 .ThenInclude(b => b.Workers)
-                .FirstOrDefault(o => o.Id == id);
+                .FirstOrDefaultAsync(o => o.Id == id);
             if (owner == null)
             {
                 throw new ArgumentNullException("Owner not found");
@@ -57,9 +57,9 @@ namespace Data_Access.Repos
             return owner;
         }
 
-        public Owner GetByIdWithTrack(int id)
+        public async Task<Owner> GetByIdWithTrack(int id)
         {
-            var owner = _context.Owners.Include(o => o.Buildings).ThenInclude(b => b.Workers).First(o => o.Id == id);
+            var owner = await _context.Owners.Include(o => o.Buildings).ThenInclude(b => b.Workers).FirstAsync(o => o.Id == id);
 
             if (owner == null)
             {
@@ -69,9 +69,9 @@ namespace Data_Access.Repos
             return owner;
         }
 
-        public Owner GetByEmail(string email)
+        public async Task<Owner> GetByEmail(string email)
         {
-            var owner = _context.Owners.AsNoTracking().FirstOrDefault(o => o.Email.EmailAddress == email);
+            var owner = await _context.Owners.AsNoTracking().FirstOrDefaultAsync(o => o.Email.EmailAddress == email);
             if (owner == null)
             {
                 throw new ArgumentNullException("Owner not found");
@@ -80,9 +80,9 @@ namespace Data_Access.Repos
             return owner;
         }
 
-        public void Update(Owner entity)
+        public async Task Update(Owner entity)
         {
-            var owner = _context.Owners.Find(entity.Id);
+            var owner = await _context.Owners.FindAsync(entity.Id);
 
             if (owner == null)
             {

@@ -46,14 +46,14 @@ namespace Infrastructure.Services
             _brepository = brepository;
         }
 
-        public void Register(Client owner)
+        public async Task Register(Client owner)
         {
-            _repository.Add(owner);
+            await _repository.Add(owner);
         }
 
-        public void Login(string password, string email)
+        public async Task Login(string password, string email)
         {
-            var user = _repository.GetByEmail(email);
+            var user = await _repository.GetByEmail(email);
             ArgumentNullException.ThrowIfNull(user, "User with such email not found");
 
             if (_passwordService.VerifyPassword(user, password, user.HashedPassword))
@@ -64,15 +64,15 @@ namespace Infrastructure.Services
             else throw new ArgumentException("Invalid Password");
         }
 
-        public void MakeOrder(Product product, int Quantity, int storeID)
+        public async Task MakeOrder(Product product, int Quantity, int storeID)
         {
-            var store = _brepository.GetById(storeID);
+            var store = await _brepository.GetById(storeID);
             var (actualstore, indx, cindx) = _buildingmapper.MapFromDb(store);
 
             Client me = store.Clients.Find(c => c.Id == int.Parse(_context.User.FindFirst("Id")?.Value));
             if (me == null)
             {
-                me = _repository.GetById(int.Parse(_context.User.FindFirst("Id")?.Value));
+                me = await _repository.GetById(int.Parse(_context.User.FindFirst("Id")?.Value));
             }
 
             var actualclient = _clientMapper.MapFromDb(me);
@@ -88,7 +88,7 @@ namespace Infrastructure.Services
             {
                 var g = _clientMapper.MapToDb(actualclient);
                 g.Id = me.Id;
-                _repository.Update(g);
+                await _repository.Update(g);
 
                 var id = store.Id;
                 //var entryStore = _dbcontext.ChangeTracker.Entries<Building>()
@@ -100,12 +100,12 @@ namespace Infrastructure.Services
                 //}
                 store = _buildingmapper.MapToDb(actualstore, indx, cindx, store.Owner);
                 store.Id = id;
-                _brepository.Update(store);
+                await _brepository.Update(store);
 
                 if(isnewclient)
                 {
                     _dbcontext.Buildings.Find(storeID).Clients.Add(_dbcontext.Clients.Find(int.Parse(_context.User.FindFirst("Id")?.Value)));
-                    _dbcontext.SaveChanges();
+                    await _dbcontext.SaveChangesAsync();
                 }
 
                 tr.Commit();

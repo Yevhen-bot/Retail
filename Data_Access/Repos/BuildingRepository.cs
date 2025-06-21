@@ -17,19 +17,19 @@ namespace Data_Access.Repos
             _context = context;
         }
 
-        public void Add(Building entity)
+        public async Task Add(Building entity)
         {
             _context.Buildings.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var building = _context.Buildings.Find(id);
+            var building = await _context.Buildings.FindAsync(id);
             if (building != null)
             {
                 _context.Buildings.Remove(building);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             else
             {
@@ -37,34 +37,34 @@ namespace Data_Access.Repos
             }
         }
 
-        public List<Building> GetAll()
+        public async Task<List<Building>> GetAll()
         {
-            return _context.Buildings
+            return await _context.Buildings
                 .AsNoTracking()
                 .Include(b => b.Products)
                 .Include(b => b.Workers)
                 .Include(b => b.Clients)
                 .Include(b => b.Owner)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Building GetById(int id)
+        public async Task<Building> GetById(int id)
         {
-            var building = _context.Buildings
+            var building = await _context.Buildings
                 .Include(b => b.Products)
                 .Include(b => b.Workers)
                 .Include(b => b.Clients)
                 .Include(b => b.Owner)
-                .FirstOrDefault(b => b.Id == id);
+                .FirstOrDefaultAsync(b => b.Id == id);
 
             if (building == null) throw new InvalidOperationException("Building not found");
 
             return building;
         }
 
-        public void Update(Building entity)
+        public async Task Update(Building entity)
         {
-            var b = _context.Buildings.Include(e => e.Clients).Include(e => e.Workers).First(e => e.Id == entity.Id);
+            var b = await _context.Buildings.Include(e => e.Clients).Include(e => e.Workers).FirstAsync(e => e.Id == entity.Id);
 
             if(b == null) throw new InvalidOperationException("Building not found");
 
@@ -74,7 +74,7 @@ namespace Data_Access.Repos
             b.Role = entity.Role;
             b.Workers = entity.Workers;
             b.Products = entity.Products;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

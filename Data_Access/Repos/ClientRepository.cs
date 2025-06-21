@@ -17,26 +17,26 @@ namespace Data_Access.Repos
             _context = context;
         }
 
-        public void Add(Client entity)
+        public async Task Add(Client entity)
         {
             _context.Clients.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var client = _context.Clients.Find(id);
+            var client = await _context.Clients.FindAsync(id);
             if (client != null)
             {
                 _context.Clients.Remove(client);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             else throw new ArgumentNullException("Client not found");
         }
 
-        public Client GetByIdWithTrack(int id)
+        public async Task<Client> GetByIdWithTrack(int id)
         {
-            var owner = _context.Clients.Find(id);
+            var owner = await _context.Clients.FindAsync(id);
 
             if (owner == null)
             {
@@ -46,14 +46,14 @@ namespace Data_Access.Repos
             return owner;
         }
 
-        public List<Client> GetAll()
+        public async Task<List<Client>> GetAll()
         {
-            return _context.Clients.AsNoTracking().ToList();
+            return await _context.Clients.AsNoTracking().ToListAsync();
         }
 
-        public Client GetById(int id)
+        public async Task<Client> GetById(int id)
         {
-            var client = _context.Clients.AsNoTracking().Include(c => c.Orders).Include(c => c.Preferences).FirstOrDefault(o => o.Id == id);
+            var client = await _context.Clients.AsNoTracking().Include(c => c.Orders).Include(c => c.Preferences).FirstOrDefaultAsync(o => o.Id == id);
             if (client == null)
             {
                 throw new ArgumentNullException("Client not found");
@@ -62,9 +62,9 @@ namespace Data_Access.Repos
             return client;
         }
 
-        public Client GetByEmail(string email)
+        public async Task<Client> GetByEmail(string email)
         {
-            var client = _context.Clients.AsNoTracking().FirstOrDefault(o => o.Email.EmailAddress == email);
+            var client = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(o => o.Email.EmailAddress == email);
             if (client == null)
             {
                 throw new ArgumentNullException("Client not found");
@@ -73,9 +73,9 @@ namespace Data_Access.Repos
             return client;
         }
 
-        public void Update(Client entity)
+        public async Task Update(Client entity)
         {
-            var client = _context.Clients.FirstOrDefault(w => w.Id == entity.Id);
+            var client = await _context.Clients.FirstOrDefaultAsync(w => w.Id == entity.Id);
 
             if (client == null)
             {
@@ -91,7 +91,7 @@ namespace Data_Access.Repos
             client.Orders = entity.Orders;
             client.Preferences = entity.Preferences;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

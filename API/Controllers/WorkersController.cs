@@ -23,12 +23,12 @@ namespace API.Controllers
 
         [Authorize(Policy = "Owner")]
         [HttpPost("add_manager")]
-        public IActionResult AddManager([FromBody] CreateWorkerModel m)
+        public async Task<IActionResult> AddManager([FromBody] CreateWorkerModel m)
         {
             var obj = _mapper.GetWorker(m);
             try
             {
-                _workerService.AddManager((Name)obj[0], (Age)obj[1], (Email)obj[2], (Adress)obj[3], (Salary)obj[4], (string)obj[5], (int)obj[6]);
+                await _workerService.AddManager((Name)obj[0], (Age)obj[1], (Email)obj[2], (Adress)obj[3], (Salary)obj[4], (string)obj[5], (int)obj[6]);
             }
             catch (Exception ex)
             {
@@ -40,12 +40,12 @@ namespace API.Controllers
 
         [Authorize(Policy = "Manager")]
         [HttpPost("add_worker")]
-        public IActionResult AddWorker([FromBody] CreateWorkerModel m)
+        public async Task<IActionResult> AddWorker([FromBody] CreateWorkerModel m)
         {
             var obj = _mapper.GetWorker(m);
             try
             {
-                _workerService.AddWorker((Name)obj[0], (Age)obj[1], (Email)obj[2], (Adress)obj[3], (Salary)obj[4], (string)obj[5], (int)obj[6]);
+                await _workerService.AddWorker((Name)obj[0], (Age)obj[1], (Email)obj[2], (Adress)obj[3], (Salary)obj[4], (string)obj[5], (int)obj[6]);
             }
             catch (Exception ex)
             {
@@ -56,11 +56,11 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel m)
+        public async Task<IActionResult> Login([FromBody] LoginModel m)
         {
             try
             {
-                _workerService.Login(m.Password, m.Email);
+                await _workerService.Login(m.Password, m.Email);
             }
             catch (Exception e)
             {
@@ -72,11 +72,11 @@ namespace API.Controllers
 
         [Authorize(Policy = "Manager")]
         [HttpGet]
-        public IActionResult GetWorkers()
+        public async Task<IActionResult> GetWorkers()
         {
             try
             {
-                return Ok(new { Workers = _workerService.GetWorkers().Result });
+                return Ok(new { Workers = await _workerService.GetWorkers() });
             }
             catch (Exception e)
             {
